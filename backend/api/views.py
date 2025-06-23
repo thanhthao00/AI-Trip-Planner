@@ -1,0 +1,52 @@
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+import google.generativeai as genai
+import json
+import re
+import ast
+
+genai.configure(api_key="AIzaSyBjSCYJScIZgtfKUMYL-e5FCwKwfA-Z910")  
+
+class ItineraryGenerationView(APIView):
+    def post(self, request, *args, **kwargs):
+        # Get data from request (you can send it from frontend)
+        destination = request.data.get("destination", "Unknown")
+        preferences = request.data.get("preferences", "None")
+        days = request.data.get("days", 3)
+        budget = request.data.get("budget", 1000)
+
+        prompt = (
+            f"Suggest 5 tourist places in {destination} for {days} day(s), "
+            f"within a budget of {budget} USD, and matching preferences: {preferences}. "
+            "Return only a JSON array in this format: "
+            '[{"name": "Place", "lat": 12.34, "lng": 56.78}] with no explanation.'
+        )
+
+        model = genai.GenerativeModel("gemini-2.0-flash")
+        response = model.generate_content(prompt)
+        raw_text = response.text.strip()
+
+        start = raw_text.find("[")
+        end = raw_text.rfind("]") + 1
+        array_str = raw_text[start:end]
+        locations = json.loads(array_str)
+        center = locations[0]
+
+        itinerary = {
+            "destination": destination,
+            "preferences": preferences,
+            "days": days,
+            "budget": budget,
+            "activities": [
+                "Visit a famous landmark",
+                "Try local cuisine",
+                "Explore a museum",
+                "Relax at a park"
+            ],
+            "locations": locations,
+            "suggested_budget": budget,
+            "center": center
+        }
+
+        return Response({"itinerary": itinerary}, status=status.HTTP_200_OK)
