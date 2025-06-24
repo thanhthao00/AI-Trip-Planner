@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 import google.generativeai as genai
+from django.db import connection
 import json
 import re
 import ast
@@ -50,3 +51,25 @@ class ItineraryGenerationView(APIView):
         }
 
         return Response({"itinerary": itinerary}, status=status.HTTP_200_OK)
+
+class BlogListView(APIView):
+    def get(self, request, *args, **kwargs):
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT title, description, url, time
+                FROM travel_blogs
+                ORDER BY time DESC
+                LIMIT 10
+            """)
+            rows = cursor.fetchall()
+
+        blogs = [
+            {
+                "title": row[0],
+                "description": row[1],
+                "url": row[2],
+                "time": row[3],
+            }
+            for row in rows
+        ]
+        return Response({"blogs": blogs})
