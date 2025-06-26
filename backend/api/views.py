@@ -4,14 +4,11 @@ from rest_framework import status
 import google.generativeai as genai
 from django.db import connection
 import json
-import re
-import ast
 
 genai.configure(api_key="AIzaSyBjSCYJScIZgtfKUMYL-e5FCwKwfA-Z910")  
 
 class ItineraryGenerationView(APIView):
     def post(self, request, *args, **kwargs):
-        # Get data from request (you can send it from frontend)
         destination = request.data.get("destination", "Unknown")
         preferences = request.data.get("preferences", "None")
         days = request.data.get("days", 3)
@@ -23,6 +20,7 @@ class ItineraryGenerationView(APIView):
             "Return only a JSON array in this format: "
             '[{"name": "Place", "lat": 12.34, "lng": 56.78}] with no explanation.'
         )
+
 
         model = genai.GenerativeModel("gemini-2.0-flash")
         response = model.generate_content(prompt)
@@ -73,3 +71,47 @@ class BlogListView(APIView):
             for row in rows
         ]
         return Response({"blogs": blogs})
+    
+class HotelListView(APIView):
+    def get(self, request, *args, **kwargs):
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT title, description, url, time
+                FROM hotels
+                ORDER BY time DESC
+                LIMIT 10
+            """)
+            rows = cursor.fetchall()
+
+        hotels = [
+            {
+                "title": row[0],
+                "description": row[1],
+                "url": row[2],
+                "time": row[3],
+            }
+            for row in rows
+        ]
+        return Response({"hotels": hotels})
+    
+class TransportationListView(APIView):
+    def get(self, request, *args, **kwargs):
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT title, description, url, time
+                FROM transportations
+                ORDER BY time DESC
+                LIMIT 10
+            """)
+            rows = cursor.fetchall()
+
+        transportations = [
+            {
+                "title": row[0],
+                "description": row[1],
+                "url": row[2],
+                "time": row[3],
+            }
+            for row in rows
+        ]
+        return Response({"transportations": transportations})

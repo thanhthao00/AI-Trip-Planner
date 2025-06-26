@@ -8,9 +8,9 @@ export default function Home() {
   const [blogs, setBlogs] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:8000/api/blogs/")
+    axios.get("http://localhost:8001/api/blogs/")
       .then((response) => {
-        setBlogs(response.data.blogs); // ✅ API returns { blogs: [...] }
+        setBlogs(response.data.blogs); 
       })
       .catch((error) => {
         console.error("Failed to fetch blogs:", error);

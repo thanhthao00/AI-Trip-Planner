@@ -13,7 +13,7 @@ default_args={
 
 with DAG(dag_id='blog_etl_pipeline',
          default_args=default_args,
-         schedule='@monthly',
+         schedule='@daily',
          catchup=False) as dags:
     
     @task()
@@ -68,7 +68,7 @@ with DAG(dag_id='blog_etl_pipeline',
                        );
                     """)
         
-        # cursor.execute("DELETE FROM travel_blogs;")
+        cursor.execute("DELETE FROM travel_blogs;")
         
         for blog in transformed_data:  
             cursor.execute("""

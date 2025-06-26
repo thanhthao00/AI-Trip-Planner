@@ -88,12 +88,11 @@
   color: white;
 }
 
-
 .Home .blog-grid {
     display: flex;
     flex-wrap: wrap;
     gap: 1.5rem;
-    justify-content: center; /* Optional: center them */
+    justify-content: center; 
 }
 
 .blog-card {
@@ -109,7 +108,8 @@
     display: block;         
     font-size: 110%;
     color: white;
-    padding-top: 10%;
+    padding-top: 2%;
     margin-left: auto;      
     width: fit-content; 
 }
+
