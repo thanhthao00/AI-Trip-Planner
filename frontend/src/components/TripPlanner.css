@@ -1,80 +1,101 @@
 .TripPlanner h1 {
-    font-family: 'Pacifico', cursive;
-    font-size: 350%;
-    text-align: center;
-    color: #030303;
-    margin-top: 2%;
+  font-family: 'Pacifico', cursive;
+  font-size: 350%;
+  text-align: center;
+  color: #030303;
+  margin-top: 2%;
 }
 
 .TripPlanner h2 {
-    font-size: 200%;
-    text-align: center;
-    color: #555881;
-    line-height: 120%;
-    margin-top: -1%;
-    font-weight: lighter;
+  font-size: 200%;
+  text-align: center;
+  color: #555881;
+  line-height: 120%;
+  margin-top: -1%;
+  font-weight: lighter;
 }
 
 .form-container {
-  max-width: 60%;
+  max-width: 50%;
   margin: auto;
   background: #e7effa;
-  padding: 2rem;
-  border-radius: 12px;
+  padding: 3%;
+  border-radius: 4%;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
 }
 
 .form-container label {
   display: block;
   font-weight: bold;
-  margin-bottom: 0.5rem;
+  margin-bottom: 2%;
+  font-size: 140%;
 }
 
 .form-container input {
+  font-family: 'Arial', sans-serif;
   width: 100%;
-  padding: 0.7rem;
-  margin-bottom: 1.5rem;
-  border: 1px solid #ccc;
+  padding: 1.5%;
+  margin-bottom: 4%;
+  border: 1% solid #030303;
   border-radius: 8px;
+  font-size: 120%;
 }
 
 .form-container button {
-  background-color: #2563eb;
+  font-size: 140%;
+  background-color: #2c3e50;
   color: white;
-  padding: 0.7rem;
-  width: 100%;
+  padding: 1.5%;
+  width: 60%;
   border: none;
-  border-radius: 0px;
+  border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
   transition: background 0.3s;
+  display: block;
+  margin: 4% auto;
+  margin-bottom: -1%;
 }
 
 .form-container button:hover {
-  background-color: #1e40af;
+  background-color: #496894;
 }
 
-.calendar-input {
-  padding: 0.7rem;
-  width: 100%;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  background-color: #f9f9f9;
-  font-size: 1rem;
-  margin-bottom: 1.5rem;
-  cursor: pointer;
+.activity-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-top: 4%;
+  margin-bottom: 4%;
 }
-.calendar-input:focus {
-  outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 3px #2563eb;
+
+.activity-option {
+  font-size: 110%;
+  padding: 1rem;
+  background-color: white;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.activity-option:hover {
+  border-color: #2c3e50;
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.2);
+}
+
+.activity-option.selected {
+  border-color: #2c3e50;
+  background-color: #ebf4ff;
 }
 
 .companion-options {
   display: flex;
   justify-content: space-between;
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: 2%;
+  margin-top: 3%;
   flex-wrap: nowrap;
 }
 
@@ -91,18 +112,18 @@
 }
 
 .companion-card:hover {
-  border-color: #2563eb;
+  border-color: #2c3e50;
   box-shadow: 0 0 10px rgba(37, 99, 235, 0.2);
 }
 
 .companion-card.selected {
-  border-color: #2563eb;
+  border-color: #2c3e50;
   background-color: #ebf4ff;
 }
 
 .companion-card img {
   height: 50px;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.5%;
 }
 
 .companion-card .label {
@@ -110,29 +131,3 @@
   text-transform: capitalize;
 }
 
-.activity-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.activity-option {
-  padding: 1rem;
-  background-color: #f1f5f9;
-  border: 2px solid transparent;
-  border-radius: 12px;
-  text-align: center;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.activity-option:hover {
-  background-color: #e2e8f0;
-}
-
-.activity-option.selected {
-  border-color: #2563eb;
-  background-color: #dbeafe;
-}

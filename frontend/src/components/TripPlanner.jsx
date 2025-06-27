@@ -1,29 +1,51 @@
 import "./TripPlanner.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import MapContainer from "./Map";
 
 const activityOptions = [
   "Beaches", "City sightseeing", "Outdoor adventures",
-  "Festivals/events", "Food exploration", "Nightlife",
-  "Shopping", "Spa wellness"
+  "Festivals", "Food exploration", "Nightlife",
+  "Shopping", "Spa wellness", "Historical landmarks"
 ];
 
+const getSavedData = () => {
+  try {
+    const saved = localStorage.getItem("tripForm");
+    return saved ? JSON.parse(saved) : {};
+  } catch {
+    return {};
+  }
+};
+
 export default function TripPlanner() {
-  const [destination, setDestination] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [days, setDays] = useState("");
-  const [budget, setBudget] = useState("");
-  const [preferences, setPreferences] = useState([]);
-  const [travelCompanion, setTravelCompanion] = useState("");
-  const [itinerary, setItinerary] = useState(null);
+  const navigate = useNavigate();
+  const saved = getSavedData();
+
+  const [destination, setDestination] = useState(saved.destination || "");
+  const [startDate, setStartDate] = useState(saved.startDate || "");
+  const [days, setDays] = useState(saved.days || "");
+  const [budget, setBudget] = useState(saved.budget || "");
+  const [preferences, setPreferences] = useState(saved.preferences || []);
+  const [travelCompanion, setTravelCompanion] = useState(saved.travelCompanion || "");
+
+  useEffect(() => {
+    localStorage.setItem("tripForm", JSON.stringify({
+      destination,
+      startDate,
+      days,
+      budget,
+      preferences,
+      travelCompanion
+    }));
+  }, [destination, startDate, days, budget, preferences, travelCompanion]);
 
   const togglePreference = (activity) => {
-    if (preferences.includes(activity)) {
-      setPreferences(preferences.filter((a) => a !== activity));
-    } else {
-      setPreferences([...preferences, activity]);
-    }
+    setPreferences((prev) =>
+      prev.includes(activity)
+        ? prev.filter((a) => a !== activity)
+        : [...prev, activity]
+    );
   };
 
   const handleSubmit = async (e) => {
@@ -38,8 +60,7 @@ export default function TripPlanner() {
         companion: travelCompanion,
       });
 
-      setItinerary(response.data.itinerary);
-      console.log("API Response:", response.data);
+      navigate("/itinerary", { state: { itinerary: response.data.itinerary } });
     } catch (error) {
       console.error("Error generating itinerary:", error.response?.data || error.message);
     }
@@ -51,39 +72,23 @@ export default function TripPlanner() {
     <div className="TripPlanner">
       <h1>Ready to explore?</h1>
       <h2>Let’s create a travel plan that’s just right for you—simple, fast, and fun!</h2>
+
       <form onSubmit={handleSubmit} className="form-container">
         <div>
           <label>What is your destination of choice?</label>
-          <input
-            type="text"
-            value={destination}
-            onChange={(e) => setDestination(e.target.value)}
-          />
+          <input type="text" value={destination} onChange={(e) => setDestination(e.target.value)} />
         </div>
         <div>
           <label>Start Date:</label>
-          <input
-            type="date"
-            value={startDate}
-            min={today}
-            onChange={(e) => setStartDate(e.target.value)}
-          />
+          <input type="date" value={startDate} min={today} onChange={(e) => setStartDate(e.target.value)} />
         </div>
         <div>
           <label>Days:</label>
-          <input
-            type="number"
-            value={days}
-            onChange={(e) => setDays(e.target.value)}
-          />
+          <input type="number" value={days} onChange={(e) => setDays(e.target.value)} />
         </div>
         <div>
           <label>Budget:</label>
-          <input
-            type="number"
-            value={budget}
-            onChange={(e) => setBudget(e.target.value)}
-          />
+          <input type="number" value={budget} onChange={(e) => setBudget(e.target.value)} />
         </div>
 
         <div>
@@ -117,26 +122,10 @@ export default function TripPlanner() {
           </div>
         </div>
 
-        <button type="submit">Generate Itinerary</button>
-      </form>
-
-      {itinerary && (
-        <div className="itinerary">
-          <h2>Itinerary for {itinerary.destination}</h2>
-          <p>Days: {itinerary.days}</p>
-          <p>Budget: ${itinerary.budget}</p>
-          <p>Preferences: {itinerary.preferences}</p>
-          <p>Travel Companion: {itinerary.companion}</p>
-          <h3>Suggested Activities:</h3>
-          <ul>
-            {itinerary.activities.map((activity, index) => (
-              <li key={index}>{activity}</li>
-            ))}
-          </ul>
-          <p>Suggested Budget: {itinerary.suggested_budget}</p>
-          <MapContainer locations={itinerary?.locations || []} center={itinerary.center} />
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <button type="submit">Generate Itinerary</button>
         </div>
-      )}
+      </form>
     </div>
   );
 }

@@ -10,12 +10,15 @@ genai.configure(api_key="AIzaSyBjSCYJScIZgtfKUMYL-e5FCwKwfA-Z910")
 class ItineraryGenerationView(APIView):
     def post(self, request, *args, **kwargs):
         destination = request.data.get("destination", "Unknown")
+        startdate = request.data.get("start_date", "Unknown")
         preferences = request.data.get("preferences", "None")
         days = request.data.get("days", 3)
         budget = request.data.get("budget", 1000)
+        companion = request.data.get("companion", "Unknown")
+
 
         prompt = (
-            f"Suggest 5 tourist places in {destination} for {days} day(s), "
+            f"Suggest 5 tourist places in {destination} for {days} day(s) go with {companion},"
             f"within a budget of {budget} USD, and matching preferences: {preferences}. "
             "Return only a JSON array in this format: "
             '[{"name": "Place", "lat": 12.34, "lng": 56.78}] with no explanation.'
@@ -45,7 +48,8 @@ class ItineraryGenerationView(APIView):
             ],
             "locations": locations,
             "suggested_budget": budget,
-            "center": center
+            "center": center,
+            "companion": companion
         }
 
         return Response({"itinerary": itinerary}, status=status.HTTP_200_OK)
