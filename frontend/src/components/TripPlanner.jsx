@@ -23,7 +23,7 @@ export default function TripPlanner() {
   const saved = getSavedData();
 
   const [destination, setDestination] = useState(saved.destination || "");
-  const [startDate, setStartDate] = useState(saved.startDate || "");
+  const [startdate, setStartDate] = useState(saved.startdate || "");
   const [days, setDays] = useState(saved.days || "");
   const [budget, setBudget] = useState(saved.budget || "");
   const [preferences, setPreferences] = useState(saved.preferences || []);
@@ -32,13 +32,13 @@ export default function TripPlanner() {
   useEffect(() => {
     localStorage.setItem("tripForm", JSON.stringify({
       destination,
-      startDate,
+      startdate,
       days,
       budget,
       preferences,
       travelCompanion
     }));
-  }, [destination, startDate, days, budget, preferences, travelCompanion]);
+  }, [destination, startdate, days, budget, preferences, travelCompanion]);
 
   const togglePreference = (activity) => {
     setPreferences((prev) =>
@@ -53,7 +53,7 @@ export default function TripPlanner() {
     try {
       const response = await axios.post("http://127.0.0.1:8000/api/generate-itinerary/", {
         destination,
-        start_date: startDate,
+        startdate: startdate,
         days: parseInt(days),
         budget: parseInt(budget),
         preferences: preferences.join(", "),
@@ -80,7 +80,7 @@ export default function TripPlanner() {
         </div>
         <div>
           <label>Start Date:</label>
-          <input type="date" value={startDate} min={today} onChange={(e) => setStartDate(e.target.value)} />
+          <input type="date" value={startdate} min={today} onChange={(e) => setStartDate(e.target.value)} />
         </div>
         <div>
           <label>Days:</label>
