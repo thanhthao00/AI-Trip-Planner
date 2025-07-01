@@ -3,6 +3,8 @@ import { useLocation } from "react-router-dom";
 import MapContainer from "./Map";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import HotelSlider from "./Hotel";
+import RestaurantSlider from "./Restaurant";
 
 const UNSPLASH_ACCESS_KEY = "Myr7t_b0P08uNbjw-zuZiBdp66RuCw8K9YPX7OC1a9s";
 const WIKIPEDIA_API = "https://en.wikipedia.org/api/rest_v1/page/summary/";
@@ -13,6 +15,8 @@ export default function Itinerary() {
   const [destinationImage, setDestinationImage] = useState("");
   const [locationImages, setLocationImages] = useState({});
   const [locationDescriptions, setLocationDescriptions] = useState({});
+  const [hotels, setHotels] = useState([]);
+  const [restaurants, setRestaurants] = useState([]);
 
   useEffect(() => {
     if (!itinerary?.destination) return;
@@ -34,7 +38,9 @@ export default function Itinerary() {
               params: { query: loc.name, per_page: 1, orientation: "landscape" },
               headers: { Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}` },
             }),
-            axios.get(`${WIKIPEDIA_API}${encodeURIComponent(loc.name)}`).catch(() => ({ data: { extract: "" } })),
+            axios.get(`${WIKIPEDIA_API}${encodeURIComponent(loc.name)}`).catch(() => ({
+              data: { extract: "" },
+            })),
           ]);
 
           const imageUrl = imageRes.data.results[0]?.urls?.small || "";
@@ -44,7 +50,6 @@ export default function Itinerary() {
         });
 
         const results = await Promise.all(promises);
-
         const imagesMap = {};
         const descriptionsMap = {};
         results.forEach(({ name, imageUrl, description }) => {
@@ -59,7 +64,35 @@ export default function Itinerary() {
       }
     };
 
+    const fetchHotels = async () => {
+      try {
+        const response = await axios.post("http://localhost:8000/api/hotel-recommendation/", {
+          destination: itinerary.destination,
+          budget: itinerary.budget,
+          companion: itinerary.companion,
+        });
+        setHotels(response.data.hotels || []);
+      } catch (err) {
+        console.error("Error fetching hotels:", err);
+      }
+    };
+
+    const fetchRestaurants = async () => {
+      try {
+        const response = await axios.post("http://localhost:8000/api/restaurant-recommendation/", {
+          destination: itinerary.destination,
+          budget: itinerary.budget,
+          companion: itinerary.companion,
+        });
+        setRestaurants(response.data.restaurants || []);
+      } catch (err) {
+        console.error("Error fetching restaurants:", err);
+      }
+    };
+
     fetchImagesAndDescriptions();
+    fetchHotels();
+    fetchRestaurants();
   }, [itinerary]);
 
   if (!itinerary) return <div>No itinerary data available.</div>;
@@ -79,12 +112,21 @@ export default function Itinerary() {
           <img src={destinationImage} alt={itinerary.destination} className="destination-image" />
         )}
 
-        <h2>📅 Daily Itinerary</h2>
+        <h2>Hotel Recommendation</h2>
+        <div className="hotel-list">
+          {hotels.length > 0 && <HotelSlider hotels={hotels} />}
+        </div>
+
+        <h2>Restaurant Recommendation</h2>
+        <div className="hotel-list">
+          {restaurants.length > 0 && <RestaurantSlider restaurants={restaurants} />}
+        </div>
+
+        <h2>Daily Itinerary</h2>
         {Array.from({ length: itinerary.days }, (_, dayIndex) => {
           const currentDate = new Date(startDateObj);
           currentDate.setDate(currentDate.getDate() + dayIndex);
           const formattedDate = currentDate.toLocaleDateString("en-GB");
-
           const dayLocations = itinerary.locations.slice(dayIndex * 2, dayIndex * 2 + 2);
 
           return (
@@ -94,7 +136,9 @@ export default function Itinerary() {
                 <div
                   key={idx}
                   className="location-card"
-                  onClick={() => window.open(`https://en.wikipedia.org/wiki/${encodeURIComponent(loc.name)}`, "_blank")}
+                  onClick={() =>
+                    window.open(`https://en.wikipedia.org/wiki/${encodeURIComponent(loc.name)}`, "_blank")
+                  }
                 >
                   <div className="location-content">
                     <div className="location-text">
@@ -102,11 +146,7 @@ export default function Itinerary() {
                       <p>{locationDescriptions[loc.name] || "No description available."}</p>
                     </div>
                     {locationImages[loc.name] && (
-                      <img
-                        src={locationImages[loc.name]}
-                        alt={loc.name}
-                        className="location-image"
-                      />
+                      <img src={locationImages[loc.name]} alt={loc.name} className="location-image" />
                     )}
                   </div>
                 </div>

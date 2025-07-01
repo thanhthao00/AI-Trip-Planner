@@ -41,12 +41,6 @@ class ItineraryGenerationView(APIView):
             "startdate": startdate,
             "days": days,
             "budget": budget,
-            "activities": [
-                "Visit a famous landmark",
-                "Try local cuisine",
-                "Explore a museum",
-                "Relax at a park"
-            ],
             "locations": locations,
             "suggested_budget": budget,
             "center": center,
@@ -54,6 +48,59 @@ class ItineraryGenerationView(APIView):
         }
 
         return Response({"itinerary": itinerary}, status=status.HTTP_200_OK)
+
+class HotelRecommendationView(APIView):
+    def post(self, request, *args, **kwargs):
+        destination = request.data.get("destination", "Unknown")
+        budget = request.data.get("budget", 100)
+        companion = request.data.get("companion", "solo")
+
+        prompt = (
+            f"Recommend 5 hotels in {destination} suitable for {companion} travelers "
+            f"with a nightly budget around ${budget/3}. "
+            "Return the result as a JSON array with this exact format: "
+            '[{"name": "Hotel Name", "price_per_night": 120, "rating": 4.5, "url": https://theboweryhotel.com/}]. '
+            "Only return valid JSON with no explanation or extra text."
+        )
+
+        try:
+            model = genai.GenerativeModel("gemini-2.0-flash")
+            response = model.generate_content(prompt)
+            raw_text = response.text.strip()
+
+            start = raw_text.find("[")
+            end = raw_text.rfind("]") + 1
+            array_str = raw_text[start:end]
+
+            hotels = json.loads(array_str)
+            return Response({"hotels": hotels}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            print("Hotel generation error:", e)
+            return Response(
+                {"error": "Failed to generate hotel recommendations."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+class RestaurantRecommendationView(APIView):
+    def post(self, request, *args, **kwargs):
+        destination = request.data.get("destination", "Unknown")
+
+        prompt = (
+            f"Suggest 8 good restaurants in {destination}. "
+            "Return only a JSON array in this format: "
+            '[{"name": "Restaurant Name", "rating": 4.5, "url": https://theboweryhotel.com/}]'
+        )
+
+        model = genai.GenerativeModel("gemini-2.0-flash")
+        response = model.generate_content(prompt)
+        text = response.text.strip()
+        json_start = text.find("[")
+        json_end = text.rfind("]") + 1
+        restaurant_data = json.loads(text[json_start:json_end])
+
+        return Response({"restaurants": restaurant_data}, status=200)
+
 
 class BlogListView(APIView):
     def get(self, request, *args, **kwargs):
