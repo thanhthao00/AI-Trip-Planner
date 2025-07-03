@@ -5,7 +5,7 @@ import google.generativeai as genai
 from django.db import connection
 import json
 
-genai.configure(api_key="AIzaSyBjSCYJScIZgtfKUMYL-e5FCwKwfA-Z910")  
+genai.configure(api_key="")  
 
 class ItineraryGenerationView(APIView):
     def post(self, request, *args, **kwargs):

@@ -6,7 +6,7 @@ import axios from "axios";
 import HotelSlider from "./Hotel";
 import RestaurantSlider from "./Restaurant";
 
-const UNSPLASH_ACCESS_KEY = "Myr7t_b0P08uNbjw-zuZiBdp66RuCw8K9YPX7OC1a9s";
+const UNSPLASH_ACCESS_KEY = "";
 const WIKIPEDIA_API = "https://en.wikipedia.org/api/rest_v1/page/summary/";
 
 export default function Itinerary() {

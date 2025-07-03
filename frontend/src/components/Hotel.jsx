@@ -4,7 +4,7 @@ import Slider from "react-slick";
 import { FaStar } from "react-icons/fa";
 import "./Hotel.css";
 
-const UNSPLASH_ACCESS_KEY = "Myr7t_b0P08uNbjw-zuZiBdp66RuCw8K9YPX7OC1a9s";
+const UNSPLASH_ACCESS_KEY = "";
 
 const HotelSlider = ({ hotels }) => {
   const [loadedHotels, setLoadedHotels] = useState([]);
